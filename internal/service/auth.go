@@ -2,7 +2,6 @@ package service
 
 import (
 	rest "Rest_API_Golan-gin-fwt"
-	"Rest_API_Golan-gin-fwt/internal/repository"
 	"crypto/sha1"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
@@ -14,30 +13,22 @@ const (
 	salt       = "sdflkhs;lsdv;lm123409792245076"
 )
 
-type Authorization interface {
-	CreateUser(user rest.User) (int, error)
-	GenerateToken(username, password string) (string, error)
-}
-
-type Service struct {
-	Authorization
-}
-
 type tokenClaims struct {
 	jwt.StandardClaims
 	UserId int `json:"user_id"`
 }
 
+type Auth interface {
+	CreateUser(user rest.User) (int, error)
+	GetUser(username, password string) (rest.User, error)
+}
+
 type AuthService struct {
-	repo repository.Authorization
+	auth Auth
 }
 
-func NewService(repos *repository.Repository) *Service {
-	return &Service{Authorization: NewAuthService(repos.Authorization)}
-}
-
-func NewAuthService(repo repository.Authorization) *AuthService {
-	return &AuthService{repo: repo}
+func NewAuthService(auth Auth) *AuthService {
+	return &AuthService{auth: auth}
 }
 
 func (s *AuthService) generationPasswordHash(password string) string {
@@ -51,11 +42,11 @@ func (s *AuthService) generationPasswordHash(password string) string {
 func (s *AuthService) CreateUser(user rest.User) (int, error) {
 	user.Password = s.generationPasswordHash(user.Password)
 
-	return s.repo.CreateUser(user)
+	return s.auth.CreateUser(user)
 }
 
 func (s *AuthService) GenerateToken(username, password string) (string, error) {
-	user, err := s.repo.GetUser(username, s.generationPasswordHash(password))
+	user, err := s.auth.GetUser(username, s.generationPasswordHash(password))
 	if err != nil {
 		return "", err
 	}

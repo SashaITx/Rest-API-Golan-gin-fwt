@@ -9,7 +9,7 @@ import (
 )
 
 type Handler struct {
-	services *service.Service
+	services *service.AuthService
 }
 
 type signInInput struct {
@@ -21,7 +21,7 @@ type error struct {
 	Message string `json:"message"`
 }
 
-func NewHandler(services *service.Service) *Handler {
+func NewHandler(services *service.AuthService) *Handler {
 	return &Handler{services: services}
 }
 
@@ -37,7 +37,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			NewErrorResponse(c, http.StatusBadRequest, err.Error())
 			return
 		}
-		id, err := h.services.Authorization.CreateUser(input)
+		id, err := h.services.CreateUser(input)
 		if err != nil {
 			NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 			return
@@ -54,7 +54,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			NewErrorResponse(c, http.StatusBadRequest, err.Error())
 			return
 		}
-		token, err := h.services.Authorization.GenerateToken(input.Username, input.Password)
+		token, err := h.services.GenerateToken(input.Username, input.Password)
 		if err != nil {
 			NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 			return
