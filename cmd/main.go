@@ -2,9 +2,9 @@ package main
 
 import (
 	rest "Rest_API_Golan-gin-fwt"
-	"Rest_API_Golan-gin-fwt/pkg/handler"
-	"Rest_API_Golan-gin-fwt/pkg/repository"
-	"Rest_API_Golan-gin-fwt/pkg/service"
+	"Rest_API_Golan-gin-fwt/internal/handler"
+	"Rest_API_Golan-gin-fwt/internal/repository"
+	"Rest_API_Golan-gin-fwt/internal/service"
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 )

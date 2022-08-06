@@ -2,7 +2,7 @@ package service
 
 import (
 	rest "Rest_API_Golan-gin-fwt"
-	"Rest_API_Golan-gin-fwt/pkg/repository"
+	"Rest_API_Golan-gin-fwt/internal/repository"
 	"crypto/sha1"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
@@ -14,6 +14,15 @@ const (
 	salt       = "sdflkhs;lsdv;lm123409792245076"
 )
 
+type Authorization interface {
+	CreateUser(user rest.User) (int, error)
+	GenerateToken(username, password string) (string, error)
+}
+
+type Service struct {
+	Authorization
+}
+
 type tokenClaims struct {
 	jwt.StandardClaims
 	UserId int `json:"user_id"`
@@ -23,8 +32,20 @@ type AuthService struct {
 	repo repository.Authorization
 }
 
+func NewService(repos *repository.Repository) *Service {
+	return &Service{Authorization: NewAuthService(repos.Authorization)}
+}
+
 func NewAuthService(repo repository.Authorization) *AuthService {
 	return &AuthService{repo: repo}
+}
+
+func (s *AuthService) generationPasswordHash(password string) string {
+
+	hash := sha1.New()
+	hash.Write([]byte(password))
+
+	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
 }
 
 func (s *AuthService) CreateUser(user rest.User) (int, error) {
@@ -45,12 +66,4 @@ func (s *AuthService) GenerateToken(username, password string) (string, error) {
 		user.Id,
 	})
 	return token.SignedString([]byte(signingKey))
-}
-
-func (s *AuthService) generationPasswordHash(password string) string {
-
-	hash := sha1.New()
-	hash.Write([]byte(password))
-
-	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
 }
