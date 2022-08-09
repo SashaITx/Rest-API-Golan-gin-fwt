@@ -24,7 +24,7 @@ func main() {
 		logrus.Fatal("failed creating DB: %s", err.Error())
 	}
 
-	repos := repository.NewRepository(db)
+	repos := repository.NewAuthPostgres(db)
 	services := service.NewAuthService(repos)
 	handlers := handler.NewHandler(services)
 	srv := new(rest.Server)
