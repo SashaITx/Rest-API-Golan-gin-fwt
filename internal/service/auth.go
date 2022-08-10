@@ -1,7 +1,7 @@
 package service
 
 import (
-	rest "Rest_API_Golan-gin-fwt"
+	"Rest_API_Golan-gin-fwt/internal/repository"
 	"crypto/sha1"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
@@ -19,8 +19,8 @@ type tokenClaims struct {
 }
 
 type Auth interface {
-	CreateUser(user rest.User) (int, error)
-	GetUser(username, password string) (rest.User, error)
+	CreateUser(user repository.User) (int, error)
+	GetUser(username, password string) (repository.User, error)
 }
 
 type AuthService struct {
@@ -39,7 +39,7 @@ func (s *AuthService) generationPasswordHash(password string) string {
 	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
 }
 
-func (s *AuthService) CreateUser(user rest.User) (int, error) {
+func (s *AuthService) CreateUser(user repository.User) (int, error) {
 	user.Password = s.generationPasswordHash(user.Password)
 
 	return s.auth.CreateUser(user)
