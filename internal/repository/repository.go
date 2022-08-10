@@ -9,9 +9,9 @@ import (
 
 type User struct {
 	Id       int    `db:"id"`
-	Name     string `binding:"required"`
-	Username string `binding:"required"`
-	Password string `binding:"required"`
+	Name     string `db:"name" binding:"required"`
+	Username string `db:"username" binding:"required"`
+	Password string `db:"password" binding:"required"`
 }
 
 type AuthPostgres struct {
