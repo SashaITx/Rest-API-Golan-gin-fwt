@@ -11,7 +11,7 @@ type User struct {
 	Id       int    `db:"id"`
 	Name     string `db:"name" binding:"required"`
 	Username string `db:"username" binding:"required"`
-	Password string `db:"password" binding:"required"`
+	Password string `db:"password_hash" binding:"required"`
 }
 
 type AuthPostgres struct {
