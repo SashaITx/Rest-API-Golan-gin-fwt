@@ -8,10 +8,10 @@ import (
 )
 
 type User struct {
-	Id       int    `db:"id"`
-	Name     string `db:"name" binding:"required"`
-	Username string `db:"username" binding:"required"`
-	Password string `db:"password_hash" binding:"required"`
+	Id           int    `db:"id"`
+	Name         string `db:"name" binding:"required"`
+	Username     string `db:"username" binding:"required"`
+	PasswordHash string `db:"password_hash" binding:"required"`
 }
 
 type AuthPostgres struct {
@@ -25,7 +25,7 @@ func NewAuthPostgres(db *sqlx.DB) *AuthPostgres {
 func (r *AuthPostgres) CreateUser(user User) (int, error) {
 	var id int
 	query := fmt.Sprintf("INSERT INTO %s (name, username, password_hash) values ($1, $2, $3) RETURNING id", usersTable)
-	row := r.db.QueryRow(query, user.Name, user.Username, user.Password)
+	row := r.db.QueryRow(query, user.Name, user.Username, user.PasswordHash)
 	if err := row.Scan(&id); err != nil {
 		return 0, err
 	}

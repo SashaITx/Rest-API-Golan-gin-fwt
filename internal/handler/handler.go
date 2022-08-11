@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"Rest_API_Golan-gin-fwt/internal/repository"
 	"Rest_API_Golan-gin-fwt/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -43,7 +42,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			NewErrorResponse(c, http.StatusBadRequest, err.Error())
 			return
 		}
-		id, err := h.services.CreateUser(repository.User{Name: input.Name, Username: input.Username, Password: input.Password})
+		id, err := h.services.CreateUser(service.User{Name: input.Name, Username: input.Username, PasswordHash: input.Password})
 		if err != nil {
 			NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 			return

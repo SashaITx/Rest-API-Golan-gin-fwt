@@ -18,6 +18,12 @@ type tokenClaims struct {
 	UserId int `json:"user_id"`
 }
 
+type User struct {
+	Name         string
+	Username     string
+	PasswordHash string
+}
+
 type Auth interface {
 	CreateUser(user repository.User) (int, error)
 	GetUser(username, password string) (repository.User, error)
@@ -32,17 +38,25 @@ func NewAuthService(auth Auth) *AuthService {
 }
 
 func (s *AuthService) generationPasswordHash(password string) string {
-
 	hash := sha1.New()
 	hash.Write([]byte(password))
-
 	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
 }
 
-func (s *AuthService) CreateUser(user repository.User) (int, error) {
-	user.Password = s.generationPasswordHash(user.Password)
+func (s *AuthService) CreateUser(user User) (int, error) {
+	user = s.CreateServiceUserPasswordHash(user.Name, user.Username, user.PasswordHash)
+	return s.auth.CreateUser(repository.User{
+		Name:         user.Name,
+		Username:     user.Username,
+		PasswordHash: user.PasswordHash})
+}
 
-	return s.auth.CreateUser(user)
+func (s *AuthService) CreateServiceUserPasswordHash(name, username, password string) User {
+	passwordHash := s.generationPasswordHash(password)
+	return User{
+		Name:         name,
+		Username:     username,
+		PasswordHash: passwordHash}
 }
 
 func (s *AuthService) GenerateToken(username, password string) (string, error) {
